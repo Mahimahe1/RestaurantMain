@@ -13,6 +13,7 @@ import Register from "./Register";
 import Login from "./Login";
 import UploadCategories from './UploadCategories';
 import CartSummary from './CartSummary';  
+import Profits from './profits';
 {/*
 {/*
 import PopularSection from './Components/PopularSection';
@@ -21,6 +22,7 @@ import Footer from './Components/Footer';
 */}
 function App() {
   return (
+    
     <div className="App font-sans">
       <div className="flex-grow">
         
@@ -37,13 +39,16 @@ function App() {
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/about" element={<AboutUs />} />
-          </Routes>
+            <Route path='/profit' element={<Profits/>} />
+          </Routes>  
       </div>
+
       {/*
       <PopularSection />
       <AppPromo />
       +
       */}
+      
     </div>
   );
 }

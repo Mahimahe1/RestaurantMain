@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import l_img from '../images/image1.png'; // ✅ import the image
+//use the userid globally
+
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,6 +15,8 @@ const Login = () => {
     try {
       const res = await axios.post("http://127.0.0.1:8000/api/login/", { email, password });
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userid",res.data.user);
+      console.log(res.data.user)
       alert("Login successful!");
       navigate("/");
     } catch (err) {

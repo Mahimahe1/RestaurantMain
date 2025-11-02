@@ -33,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
 from django.db import models
 
 class Category(models.Model):
@@ -42,3 +43,36 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)  
+    added_on = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'category')
+        ordering = ['-added_on']
+
+class Order(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    total=models.IntegerField(default=0)
+    added_on = models.DateTimeField(auto_now_add=True)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    ordered_date=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.category.name} x {self.quantity}"
+
+    @property
+    def total_price(self):
+        return self.quantity * float(self.category.price)
+
+
+

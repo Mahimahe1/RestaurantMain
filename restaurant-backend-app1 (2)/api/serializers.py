@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import User
+from . models import Cart
 from django.contrib.auth import authenticate
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,11 +29,40 @@ class LoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid credentials")
+    
 from rest_framework import serializers
-from .models import Category
+from .models import Category,Order,OrderItem
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+        read_only_fields = ['user']
+
+
+class Cartserializer(serializers.ModelSerializer):
+    category=CategorySerializer(read_only=True)
+    user=RegisterSerializer(read_only=True)
+    class Meta:
+        model = Cart
+        fields = ['id','category','user','quantity','added_on']
+
+
+class OrderItemserializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    total_price = serializers.SerializerMethodField()    # gives the field that reads the value which is calculated
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'category', 'quantity', 'total_price','ordered_date']
+
+    def get_total_price(self, obj):
+        return obj.total_price
+    
+class Orderserializer(serializers.ModelSerializer):
+    user=RegisterSerializer(read_only=True)
+    items = OrderItemserializer(many=True, read_only=True)
+    class Meta:
+        model=Order
+        fields=['id','user','total','added_on','items']
 

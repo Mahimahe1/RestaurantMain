@@ -4,16 +4,17 @@ import Hero from './Hero';
 import Footer from './Footer';
 import CartSummary from './CartSummary'; // ✅ Import here
 
+
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     axios.get("http://127.0.0.1:8000/api/categories/")
       .then((res) => {
         setCategories(res.data);
+       
         setLoading(false);
       })
       .catch((err) => {
@@ -21,6 +22,8 @@ const Categories = () => {
         setLoading(false);
       });
   }, []);
+
+ 
 
   const handleQuantityChange = (name, delta) => {
     setQuantities((prev) => ({
@@ -30,8 +33,29 @@ const Categories = () => {
   };
 
   const handleAddToCart = (item) => {
+    let token=localStorage.getItem("token")
+  
     const qty = quantities[item.name] || 1;
+    
     setCart((prev) => [...prev, { ...item, qty }]);
+    const userId = localStorage.getItem("userid");
+    console.log(userId)
+        let posturl="http://127.0.0.1:8000/api/viewcart/";  //add the items to the table and check if the item is samee or not
+        axios.post(posturl,{
+          "user":userId,
+          "category":item.id,
+          "quantity":qty,
+        },{
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': `Token ${token}`, 
+          }
+        }).then((resp)=>{
+          console.log(resp)
+        }).catch((err)=>{
+          console.log(err)
+        })
+    
     alert(`${item.name} added to cart (${qty}x)`);
   };
 
