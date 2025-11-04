@@ -25,6 +25,7 @@ def login_user(request):
     password = request.data.get('password')
     user = authenticate(email=email, password=password)
     if user is not None:    
+        Token.objects.filter(user=user).delete()
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"message": "Login successful!",'token':token.key,'user':user.id}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -32,7 +33,7 @@ def login_user(request):
 from rest_framework import generics,permissions
 from .models import Category,Cart,Order,OrderItem
 from rest_framework import serializers
-from .serializers import CategorySerializer,Cartserializer,Orderserializer
+from .serializers import CategorySerializer,Cartserializer,Orderserializer,Addressserializer
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.db.models.functions import TruncDate  # TO get the date only in the datetime portion
@@ -100,7 +101,6 @@ class Orderitem(generics.ListCreateAPIView):
 
     
 class DaywiseProfits(APIView):
-
     def get(self,request):
         profits=(
             Order.objects.annotate(day=TruncDate('added_on')).values('day').annotate(total_sum=Sum('total')).order_by('day')
@@ -108,3 +108,64 @@ class DaywiseProfits(APIView):
         return Response(profits)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_cart(request, pk):
+    try:
+        cart_item = Cart.objects.get(id=pk, user=request.user)
+    except Cart.DoesNotExist:
+        return Response({"error": "Cart item not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    new_qty = request.data.get("quantity")
+    if not new_qty or int(new_qty) < 1:
+        return Response({"error": "Invalid quantity."}, status=status.HTTP_400_BAD_REQUEST)
+
+    cart_item.quantity = int(new_qty)
+    cart_item.save()
+    serializer = Cartserializer(cart_item)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_cart_item(request, pk):
+    try:
+        cart_item = Cart.objects.get(id=pk, user=request.user)
+    except Cart.DoesNotExist:
+        return Response({"error": "Cart item not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    cart_item.delete()
+    return Response({"message": "Item removed successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_user(request):
+    try:
+        # Delete the user's current token
+        request.user.auth_token.delete()
+        return Response({"message": "Logout successful!"}, status=status.HTTP_200_OK)
+    except Exception:
+        return Response({"error": "Invalid request or already logged out."},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_address(request):
+    serializer = Addressserializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+from . models import Address
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_addresses(request):
+    addresses = Address.objects.filter(user=request.user).order_by('-created_at')
+    serializer = Addressserializer(addresses, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

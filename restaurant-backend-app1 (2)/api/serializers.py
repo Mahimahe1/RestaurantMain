@@ -31,7 +31,7 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Invalid credentials")
     
 from rest_framework import serializers
-from .models import Category,Order,OrderItem
+from .models import Category,Order,OrderItem,Address
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,3 +66,9 @@ class Orderserializer(serializers.ModelSerializer):
         model=Order
         fields=['id','user','total','added_on','items']
 
+
+class Addressserializer(serializers.ModelSerializer):
+    class Meta:
+        model=Address
+        fields='__all__'
+        read_only_fields = ['user']    

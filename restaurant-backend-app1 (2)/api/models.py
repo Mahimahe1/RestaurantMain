@@ -39,7 +39,7 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    img = models.ImageField(upload_to='categories/')  # ✅ file upload
+    img = models.ImageField(upload_to='categories/')  
 
     def __str__(self):
         return self.name
@@ -75,4 +75,36 @@ class OrderItem(models.Model):
         return self.quantity * float(self.category.price)
 
 
+from django.contrib.auth import get_user_model
+User=get_user_model()
+class Address(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="Address")
+    full_name = models.CharField(max_length=100)  
+    phone_number = models.CharField(max_length=15)
+    
+    house_no = models.CharField(max_length=100) 
+    street = models.CharField(max_length=200, blank=True, null=True)
+    landmark = models.CharField(max_length=200, blank=True, null=True) 
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, default="India")
+
+    address_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('home', 'Home'),
+            ('work', 'Work'),
+            ('other', 'Other'),
+        ],
+        default='home'
+    )
+    
+    is_default = models.BooleanField(default=False)  # default address toggle
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.city} ({self.address_type})"
+
+    
 

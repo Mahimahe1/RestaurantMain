@@ -3,6 +3,9 @@ import { useState,useEffect } from "react";
 import OrdersPage from "./OrdersPage";
 import { LineChart,BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import Orders from "./Orders";
+import Paymentpage from "./Paymentpage";
+import AddAddressForm from "./Address";
+import Changeaddress from "./Changeaddress";
 function Profits(){
     let [data,setdata]=useState([])
     let token=localStorage.getItem("token")
@@ -33,8 +36,6 @@ function Profits(){
           <Bar dataKey="profit" fill="#4F46E5" radius={[10, 10, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-
-      
       <OrdersPage/>
     </div>
     );

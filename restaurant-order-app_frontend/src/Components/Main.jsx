@@ -11,8 +11,12 @@ import ContactUs from "./ContactUs";
 import PrivacyPolicy from "./PrivacyPolicy";
 import Register from "./Register";
 import Login from "./Login";
+import Logout from './Logout';
 import UploadCategories from './UploadCategories';
 import CartSummary from './CartSummary';  
+import Changeaddress from './Changeaddress';
+import Paymentpage from './Paymentpage';
+import AddAddressForm from './Address';
 import Profits from './profits';
 {/*
 {/*
@@ -40,6 +44,11 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path='/profit' element={<Profits/>} />
+            <Route path='/logout' element={<Logout/>} />
+            <Route path='/payment' element={<Paymentpage/>}/>
+            <Route path='/address' element={<AddAddressForm/>}/>
+
+
           </Routes>  
       </div>
 
