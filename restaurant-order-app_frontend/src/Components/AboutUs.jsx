@@ -1,13 +1,41 @@
 const AboutUs = () => {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">About Us</h1>
-      <p>
-        We are dedicated to bringing you the finest dining experience with fresh ingredients 
-        and exceptional service. Our chefs create delicious meals that make every visit memorable.
-      </p>
+    <div
+      className="relative min-h-screen w-full bg-cover bg-center bg-fixed bg-no-repeat text-white"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1600891964091-0e32e19b8d7c?auto=format&fit=crop&w=1950&q=80')",
+      }}
+    >
+      {/* Overlay for readability */}
+      <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+
+      {/* Content */}
+      <div className="relative z-10 p-12 max-w-5xl mx-auto text-center">
+        <h1 className="text-5xl font-bold mb-8 text-yellow-400 drop-shadow-lg">
+          About Us
+        </h1>
+
+        <p className="text-xl leading-relaxed mb-6">
+          Welcome to <span className="font-semibold text-yellow-300">Foodie's Delight</span> — 
+          where passion meets flavor! Our mission is to create an unforgettable dining experience 
+          through fresh ingredients, authentic flavors, and heartwarming hospitality.
+        </p>
+
+        <p className="text-xl leading-relaxed mb-6">
+          Our chefs craft every dish with love and creativity, drawing inspiration from cuisines 
+          around the world. Whether you’re stopping by for a quick bite or celebrating a special 
+          occasion, we make sure every meal is a delightful experience.
+        </p>
+
+        <p className="text-xl leading-relaxed">
+          We believe in quality, freshness, and satisfaction — because you deserve nothing less 
+          than the best. Come, savor the taste of perfection with us!
+        </p>
+      </div>
     </div>
   );
 };
 
 export default AboutUs;
+

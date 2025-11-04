@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+
 const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white py-8">
@@ -12,6 +14,8 @@ const Footer = () => {
 
         {/* Links */}
         <div className="flex flex-col md:flex-row gap-8">
+          
+          {/* Company Section */}
           <div>
             <h2 className="font-semibold">Company</h2>
             <ul className="mt-2 space-y-1 text-gray-400">
@@ -20,6 +24,8 @@ const Footer = () => {
               <li><Link to="/blog">Blog</Link></li>
             </ul>
           </div>
+
+          {/* Support Section */}
           <div>
             <h2 className="font-semibold">Support</h2>
             <ul className="mt-2 space-y-1 text-gray-400">
@@ -28,12 +34,44 @@ const Footer = () => {
               <li><Link to="/privacy-policy">Privacy Policy</Link></li>
             </ul>
           </div>
+
+          {/* Follow Us Section */}
           <div>
             <h2 className="font-semibold">Follow Us</h2>
-            <ul className="mt-2 flex gap-4 text-gray-400">
-              <li>Facebook</li>
-              <li>Twitter</li>
-              <li>Instagram</li>
+            <ul className="mt-2 flex gap-5 text-gray-400">
+              <li>
+                <a
+                  href="https://www.facebook.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-500 transition-colors duration-300 flex items-center gap-2"
+                >
+                  <FaFacebookF className="text-xl" />
+                  Facebook
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://twitter.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-sky-400 transition-colors duration-300 flex items-center gap-2"
+                >
+                  <FaTwitter className="text-xl" />
+                  Twitter
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-pink-500 transition-colors duration-300 flex items-center gap-2"
+                >
+                  <FaInstagram className="text-xl" />
+                  Instagram
+                </a>
+              </li>
             </ul>
           </div>
         </div>
