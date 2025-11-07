@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Changeaddress from "./Changeaddress";
-
+import { useNavigate } from "react-router-dom";
 export default function Paymentpage() {
   const [address, setAddress] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState("upi1");
   const [loading, setLoading] = useState(false);
   const [showChangePage, setShowChangePage] = useState(false);
-  
+  const navigate=useNavigate();
 
   useEffect(() => {
      const stored = localStorage.getItem("selectedAddress");
@@ -34,12 +34,17 @@ export default function Paymentpage() {
       alert(`Payment via ${selectedPayment} initiated`);
       alert('Order placed Succesfully')
       setLoading(false);
+      navigate("/view")
     }, 1000);
   };
 
   const handleChangeAddress = () => {
     setShowChangePage(true);
   };
+  const cancelpayment =()=>{
+    alert("Cancelling Payment")
+    navigate("/view")
+  }
 
   // 👇 callback from Changeaddress when user selects one
   const handleSelectAddress = (selectedAddress) => {
@@ -73,7 +78,13 @@ export default function Paymentpage() {
               </button>
             </>
           ) : (
-            <p>Loading address...</p>
+            <>
+            <p>Please add a delivery address</p>
+            
+            <button onClick={handleChangeAddress} className="text-indigo-600 text-sm mt-2 hover:underline">
+                Change delivery address
+            </button>
+            </>
           )}
         </div>
 
@@ -122,6 +133,12 @@ export default function Paymentpage() {
 
           <button className="mt-4 text-blue-600 text-sm hover:underline">
             + Add account to Amazon Pay UPI
+          </button>
+          <button
+            onClick={cancelpayment}
+            className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-2 rounded-lg transition"
+          >
+            {loading ? "Processing..." : "Cancel Payment"}
           </button>
         </div>
       </div>

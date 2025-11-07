@@ -1,19 +1,17 @@
 import { useEffect } from "react";
-import axios from "axios";
-function Logout(){
-    useEffect(()=>{
-        const token = localStorage.getItem("token");
+import { useNavigate } from "react-router-dom";
 
-        axios.post("http://127.0.0.1:8000/api/logout/", {}, {
-        headers: { Authorization: `Token ${token}` }
-        })
-        .then(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("userid");
-        alert("Logged out successfully!");
-        })
-        .catch(err => console.log(err));
-    },[])
-}
+const Logout = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    // ✅ Clear stored login data
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    alert("Logged out successfully!");
+    navigate("/login"); // redirect to login page
+  }, [navigate]);
+
+  return null;
+};
 
 export default Logout;

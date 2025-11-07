@@ -27,13 +27,13 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/register/", formData);
-      console.log(response.data);
+      const res = await axios.post("http://127.0.0.1:8000/api/register/", formData);
+      console.log(res.data);
       setMessage("🎉 Registration successful!");
       setTimeout(() => navigate("/login"), 2000); // redirect to login page
     } catch (error) {
-      console.error(error);
-      setMessage("❌ Error registering user!");
+      console.error(error.response?.data);
+      setMessage("❌ Registration failed. Please try again.");
     }
   };
 
@@ -121,7 +121,7 @@ const Register = () => {
         {message && (
           <p
             className={`text-center mt-4 font-semibold ${
-              message.includes("successful") ? "text-green-700" : "text-red-600"
+              message.includes("successfull") ? "text-green-700" : "text-red-600"
             }`}
           >
             {message}

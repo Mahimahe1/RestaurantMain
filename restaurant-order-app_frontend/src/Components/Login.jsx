@@ -1,41 +1,54 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import l_img from '../images/image1.png'; // ✅ import the image
-//use the userid globally
-
+import l_img from '../images/image1.png';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/login/", { email, password });
+      const res = await axios.post("http://127.0.0.1:8000/api/login/", {
+        email,
+        password,
+      });
+
+      console.log("Login Response:", res.data);
+
+      // ✅ Store token + full user object
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userid",res.data.user);
-      console.log(res.data)
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // ✅ Store superuser flag separately
+      localStorage.setItem("is_superuser", res.data.user.is_superuser);
+
       alert("Login successful!");
-      navigate("/");
+      navigate("/view");
     } catch (err) {
-      alert("Invalid email or password!");
+      console.error(err.response?.data);
+      alert(err.response?.data?.error || "Invalid email or password!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
       className="h-screen w-full bg-cover bg-center flex items-center justify-center"
-      style={{
-        backgroundImage:
-          `url(${l_img})`
-      }}
+      style={{ backgroundImage: `url(${l_img})` }}
     >
       <div className="bg-white/80 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-96 max-w-full">
         <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
           Welcome Back 👋
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -67,9 +80,10 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300"
+            disabled={loading}
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

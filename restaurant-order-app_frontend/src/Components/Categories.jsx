@@ -68,7 +68,8 @@ const Categories = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className=" mt-0">
+      <marquee behavior="scroll" direction="left">🍽️ Welcome to Foodie's Paradise — Fresh Taste • Great Ambience • Fast Service • Order Now! 🍕🍔🌮</marquee>
       <Hero />
       <h2 className="text-2xl font-bold mb-6 text-center">🍽 Explore Categories</h2>
 

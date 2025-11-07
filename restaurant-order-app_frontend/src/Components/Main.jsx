@@ -18,6 +18,9 @@ import Changeaddress from './Changeaddress';
 import Paymentpage from './Paymentpage';
 import AddAddressForm from './Address';
 import Profits from './profits';
+import LandingPage from './Landingpage';
+
+import Profile from './Profile';
 {/*
 {/*
 import PopularSection from './Components/PopularSection';
@@ -31,6 +34,7 @@ function App() {
       <div className="flex-grow">
         
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/cart" element={<CartSummary />} />
             <Route path="/upload" element={<UploadCategories />} />
             <Route path="/view" element={<Categories />} />
@@ -47,6 +51,7 @@ function App() {
             <Route path='/logout' element={<Logout/>} />
             <Route path='/payment' element={<Paymentpage/>}/>
             <Route path='/address' element={<AddAddressForm/>}/>
+            <Route path='/profile' element={<Profile/>}/>
 
 
           </Routes>  
