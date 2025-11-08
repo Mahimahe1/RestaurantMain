@@ -23,11 +23,27 @@ def register_user(request):
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
+
     user = authenticate(email=email, password=password)
-    if user is not None:    
+
+    if user is not None:
+        # Delete old token (Optional but good practice)
         Token.objects.filter(user=user).delete()
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({"message": "Login successful!",'token':token.key,'user':user.id}, status=status.HTTP_200_OK)
+
+        return Response({
+            "message": "Login successful!",
+            "token": token.key,
+            "user": {
+                "id": user.id,
+                "full_name": user.full_name,
+                "email": user.email,
+                "contact": user.contact,
+                "is_superuser": user.is_superuser,
+                "is_staff": user.is_staff
+            }
+        }, status=status.HTTP_200_OK)
+
     return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 from rest_framework import generics,permissions
@@ -41,7 +57,7 @@ from django.db.models.functions import TruncDate  # TO get the date only in the 
 
 class CategoryListCreate(generics.ListCreateAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer 
+    serializer_class = CategorySerializer
 
 class Getcart(generics.ListCreateAPIView):
     serializer_class = Cartserializer
@@ -169,3 +185,5 @@ def get_addresses(request):
     addresses = Address.objects.filter(user=request.user).order_by('-created_at')
     serializer = Addressserializer(addresses, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+

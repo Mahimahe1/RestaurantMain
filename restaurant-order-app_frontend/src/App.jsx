@@ -3,6 +3,9 @@ import React from 'react';
 import Navbar from './Components/Navbar';
 import Main from './Components/Main';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 {/*
 {/*

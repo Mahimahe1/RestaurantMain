@@ -72,3 +72,9 @@ class Addressserializer(serializers.ModelSerializer):
         model=Address
         fields='__all__'
         read_only_fields = ['user']    
+      
+from .models import Item
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'name', 'price', 'description', 'category', 'image']
