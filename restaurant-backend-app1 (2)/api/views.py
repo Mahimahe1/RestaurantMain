@@ -23,27 +23,11 @@ def register_user(request):
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
-
     user = authenticate(email=email, password=password)
-
-    if user is not None:
-        # Delete old token (Optional but good practice)
+    if user is not None:    
         Token.objects.filter(user=user).delete()
         token, _ = Token.objects.get_or_create(user=user)
-
-        return Response({
-            "message": "Login successful!",
-            "token": token.key,
-            "user": {
-                "id": user.id,
-                "full_name": user.full_name,
-                "email": user.email,
-                "contact": user.contact,
-                "is_superuser": user.is_superuser,
-                "is_staff": user.is_staff
-            }
-        }, status=status.HTTP_200_OK)
-
+        return Response({"message": "Login successful!",'token':token.key,'user':user.id}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 from rest_framework import generics,permissions
@@ -57,7 +41,7 @@ from django.db.models.functions import TruncDate  # TO get the date only in the 
 
 class CategoryListCreate(generics.ListCreateAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = CategorySerializer 
 
 class Getcart(generics.ListCreateAPIView):
     serializer_class = Cartserializer
@@ -113,6 +97,35 @@ class Orderitem(generics.ListCreateAPIView):
 
         cart_items.delete()
         return order
+    
+
+class Orderitems1(generics.ListCreateAPIView):
+    serializer_class = Orderserializer
+    permission_classes = []   # No authentication required
+
+    def get_queryset(self):
+        return Order.objects.all().order_by('-added_on')
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        cart_items = Cart.objects.filter(user=user)
+
+        if not cart_items.exists():
+            raise ValidationError("Your cart is empty.")
+
+        total = sum(float(item.category.price) * item.quantity for item in cart_items)
+        order = serializer.save(user=user, total=total)
+
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                category=item.category,
+                quantity=item.quantity
+            )
+
+        cart_items.delete()
+        return order
+
     
 
     
@@ -187,3 +200,15 @@ def get_addresses(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+from rest_framework import generics
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Category
+from .serializers import CategorySerializer
+from .filters import ProductFilter
+
+class ProductList(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter

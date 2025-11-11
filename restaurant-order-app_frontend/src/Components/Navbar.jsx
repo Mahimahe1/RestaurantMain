@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import logoImg from "../images/logo1.png"; // 🔹 Add your custom logo here
+import logoImg from "../images/logo1.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +12,6 @@ const Navbar = () => {
   const [isSuperUser, setIsSuperUser] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Load user info dynamically
   useEffect(() => {
     const loadUser = () => {
       const userData = localStorage.getItem("user");
@@ -20,31 +19,32 @@ const Navbar = () => {
       if (userData) setUser(JSON.parse(userData));
       setIsSuperUser(superUser === "true" || superUser === true || superUser === "1");
     };
-
     loadUser();
     window.addEventListener("storage", loadUser);
     return () => window.removeEventListener("storage", loadUser);
   }, []);
 
-  // 🔍 Handle search
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  // 🔍 Live search on typing
+  useEffect(() => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
     }
 
-    try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/items/?search=${searchQuery}`
-      );
-      setResults(response.data);
-    } catch (error) {
-      console.error("Search error:", error);
-    }
-  };
+    const fetchResults = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/items/?search=${searchQuery}`
+        );
+        setResults(response.data);
+      } catch (error) {
+        console.error("Search error:", error);
+      }
+    };
 
-  // 🚪 Logout
+    fetchResults();
+  }, [searchQuery]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -54,9 +54,6 @@ const Navbar = () => {
     setShowDropdown(false);
     navigate("/login");
   };
-
-  // 🔹 Safely get first letter of user name
-  const displayLetter = user?.full_name?.charAt(0)?.toUpperCase() || "P";
 
   return (
     <>
@@ -71,24 +68,34 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-4">
             {/* Search Bar */}
-            <form
-              onSubmit={handleSearch}
-              className="flex items-center bg-white rounded-full px-3 py-1 shadow-inner focus-within:ring-2 focus-within:ring-red-400 transition"
-            >
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search items..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="ml-2 p-1 text-gray-800 bg-transparent outline-none placeholder-gray-400 w-40 focus:w-56 transition-all"
+                className="ml-2 p-2 text-gray-800 rounded-full outline-none w-56 focus:w-64 transition-all"
               />
-              <button
-                type="submit"
-                className="ml-2 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-700 transition"
-              >
-                Search
-              </button>
-            </form>
+
+              {/* Search Results Dropdown */}
+              {results.length > 0 && (
+                <ul className="absolute mt-1 bg-white text-gray-800 w-full rounded shadow-lg max-h-60 overflow-y-auto z-50">
+                  {results.map((item) => (
+                    <li
+                      key={item.id}
+                      className="p-2 hover:bg-red-100 cursor-pointer"
+                      onClick={() => {
+                        navigate(`/item/${item.id}`); // Navigate to item page
+                        setResults([]);
+                        setSearchQuery("");
+                      }}
+                    >
+                      {item.name} - ₹{item.price}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             {/* Cart */}
             <Link to="/cart" className="hover:underline">
@@ -101,7 +108,7 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="w-9 h-9 rounded-full bg-white text-red-600 flex items-center justify-center font-semibold hover:bg-gray-200 cursor-pointer transition"
               >
-                {displayLetter}
+                {user ? user.full_name.charAt(0).toUpperCase() : "P"}
               </div>
 
               {showDropdown && (
@@ -129,10 +136,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Toggle */}
-          <button
-            className="md:hidden focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          <button className="md:hidden focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? "Close" : "Menu"}
           </button>
         </div>
@@ -140,26 +144,33 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden bg-red-600 text-white px-4 py-3 space-y-2">
-            <form
-              onSubmit={handleSearch}
-              className="flex items-center bg-white rounded-full px-3 py-1 shadow-inner focus-within:ring-2 focus-within:ring-red-400 transition"
-            >
-              <input
-                type="text"
-                placeholder="Search items..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="ml-2 p-1 text-gray-800 bg-transparent outline-none placeholder-gray-400 w-full focus:w-full transition-all"
-              />
-              <button
-                type="submit"
-                className="ml-2 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-700 transition"
-              >
-                Search
-              </button>
-            </form>
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="p-2 rounded-full text-gray-800 w-full outline-none"
+            />
+            {results.length > 0 && (
+              <ul className="bg-white text-gray-800 rounded shadow-lg max-h-60 overflow-y-auto">
+                {results.map((item) => (
+                  <li
+                    key={item.id}
+                    className="p-2 hover:bg-red-100 cursor-pointer"
+                    onClick={() => {
+                      navigate(`/item/${item.id}`);
+                      setResults([]);
+                      setSearchQuery("");
+                      setIsOpen(false);
+                    }}
+                  >
+                    {item.name} - ₹{item.price}
+                  </li>
+                ))}
+              </ul>
+            )}
 
-            <Link to="/cart" className="block hover:underline">Cart</Link>
+            <Link to="/cart" className="block">Cart</Link>
 
             {!user ? (
               <>
@@ -181,25 +192,6 @@ const Navbar = () => {
           </div>
         )}
       </nav>
-
-      {/* Search Results */}
-      {results.length > 0 && (
-        <div className="bg-gray-50 shadow-md p-4 mt-2">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Search Results:</h3>
-          <ul className="space-y-2">
-            {results.map(item => (
-              <li key={item.id} className="bg-white p-3 rounded shadow hover:bg-gray-100 cursor-pointer" onClick={() => {
-                navigate(`/item/${item.id}`);
-                setResults([]);
-                setSearchQuery("");
-              }}>
-                <p className="font-semibold text-red-600">{item.name}</p>
-                <p className="text-gray-600">₹{item.price}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </>
   );
 };
