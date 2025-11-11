@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import Piechart from "./Piechart";
 function AllOrders() {
   const [orders, setOrders] = useState([]);
 
@@ -8,6 +8,7 @@ function AllOrders() {
     axios
       .get("http://127.0.0.1:8000/api/Allorders/")
       .then((res) => setOrders(res.data))
+      
       .catch((err) => console.error("Error fetching orders:", err));
   }, []);
 

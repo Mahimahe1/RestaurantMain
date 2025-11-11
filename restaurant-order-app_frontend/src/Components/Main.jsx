@@ -19,8 +19,10 @@ import Paymentpage from './Paymentpage';
 import AddAddressForm from './Address';
 import Profits from './Profits';
 import LandingPage from './Landingpage';
-
+import Orders from './Orders';
 import Profile from './Profile';
+import OrdersPage from './OrdersPage';
+import AllOrders from './AllOrders';
 {/*
 {/*
 import PopularSection from './Components/PopularSection';
@@ -32,7 +34,6 @@ function App() {
     
     <div className="App font-sans">
       <div className="flex-grow">
-        
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/cart" element={<CartSummary />} />
@@ -52,6 +53,8 @@ function App() {
             <Route path='/payment' element={<Paymentpage/>}/>
             <Route path='/address' element={<AddAddressForm/>}/>
             <Route path='/profile' element={<Profile/>}/>
+            <Route path='/orders' element={<OrdersPage/>}/>
+            <Route path='/Allorders' element={<AllOrders/>}/>
 
 
           </Routes>  

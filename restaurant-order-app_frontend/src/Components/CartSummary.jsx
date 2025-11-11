@@ -41,7 +41,7 @@ function CartSummary() {
       .catch((err) => console.log(err));
   };
 
- 
+ {/* 
   const removeItem = (item) => {
     axios
       .delete(`http://127.0.0.1:8000/api/deletecart/${item.id}/`, {
@@ -50,6 +50,26 @@ function CartSummary() {
       .then(() => setRefresh(!refresh))
       .catch((err) => console.log(err));
   };
+
+  */}
+
+const removeItem = (item) => {
+  axios
+    .delete(`http://127.0.0.1:8000/api/deletecart/${item.id}/`, {
+      headers: { Authorization: `Token ${token}` },
+    })
+    .then(() => {
+      // Refresh cart
+      setRefresh(!refresh);
+
+      // Temporary check BEFORE React re-renders
+      if (cart.length === 1) {
+        navigate("/view"); // 
+      }
+    })
+    .catch((err) => console.log(err));
+};
+
 
   
   const OrderedItem = () => {

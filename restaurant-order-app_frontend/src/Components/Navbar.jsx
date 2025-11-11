@@ -14,6 +14,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const loadUser = () => {
+      
       const userData = localStorage.getItem("user");
       const superUser = localStorage.getItem("is_superuser");
       if (userData) setUser(JSON.parse(userData));
@@ -54,7 +55,6 @@ const Navbar = () => {
     setShowDropdown(false);
     navigate("/login");
   };
-
   return (
     <>
       <nav className="bg-red-600 text-white px-4 py-3 shadow-md">
@@ -96,6 +96,9 @@ const Navbar = () => {
                 </ul>
               )}
             </div>
+            <Link to="/view" className="hover:underline">
+              <i className="fa fa-home" style={{ fontSize: "22px" }}></i>
+            </Link>
 
             {/* Cart */}
             <Link to="/cart" className="hover:underline">
@@ -108,7 +111,7 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="w-9 h-9 rounded-full bg-white text-red-600 flex items-center justify-center font-semibold hover:bg-gray-200 cursor-pointer transition"
               >
-                {user ? user.full_name.charAt(0).toUpperCase() : "P"}
+                {user ? user.full_name : "P"}
               </div>
 
               {showDropdown && (
@@ -121,9 +124,12 @@ const Navbar = () => {
                   ) : (
                     <>
                       <Link to="/view" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>Home</Link>
+                      <Link to="/profit" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>profits and Overview</Link>
+                       <Link to="/orders" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>your Orders</Link>
                       {isSuperUser && (
                         <>
-                          <Link to="/profit" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>Profit</Link>
+                          <Link to="/profit" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>Profits and overview</Link>
+                          <Link to="/upload" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>View Orders</Link>
                           <Link to="/upload" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>Upload</Link>
                         </>
                       )}
