@@ -19,7 +19,7 @@ function Piechart() {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/Allorders/")
+      .get("http://127.0.0.1:8000/api/allorders/")
       .then((res) => setOrders(res.data))
       .catch((err) => console.error("Error fetching orders:", err));
   }, []);

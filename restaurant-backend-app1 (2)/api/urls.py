@@ -15,6 +15,6 @@ urlpatterns = [
     path('address/',views.add_address,name='address'),
     path('get_addresses/', views.get_addresses, name='get_addresses'),
     path('product/',ProductList.as_view(),name='product'),
-    path('Allorders/',views.Orderitems1.as_view(),name='Allorders'),
+    path('allorders/',views.Orderitems1.as_view(),name='Allorders'),
 ]
 
