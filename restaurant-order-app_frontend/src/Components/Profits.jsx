@@ -1,9 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import OrdersPage from "./OrdersPage";
-import Filter from "./Filter";
-import AllOrders from "./AllOrders";
 import Piechart from "./Piechart";
+
 import {
   BarChart,
   Bar,
@@ -15,84 +13,99 @@ import {
   Legend,
 } from "recharts";
 
-
 function Profits() {
   const [data, setData] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [mode, setMode] = useState("day"); // ➤ day | week | month
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    let url = "";
+
+    if (mode === "day") url = "http://127.0.0.1:8000/api/dayprofits/";
+    if (mode === "week") url = "http://127.0.0.1:8000/api/weekprofits/";
+    if (mode === "month") url = "http://127.0.0.1:8000/api/monthprofits/";
+
     axios
-      .get("http://127.0.0.1:8000/api/dayprofits/", {
-        headers: { Authorization: `Token ${token}` },
-      })
+      .get(url, { headers: { Authorization: `Token ${token}` } })
       .then((resp) => {
         const formatted = resp.data.map((item) => ({
-          day: item.day,
+          label:
+            mode === "day"
+              ? item.day
+              : mode === "week"
+              ? `Week ${item.week}`
+              : item.month,
           total: item.total_sum,
           profit: item.total_sum * 0.2,
         }));
         setData(formatted);
-      })
-      .catch((err) => {
-        console.log(err);
       });
-  }, []);
+  }, [mode]);
+
+  const onBarClick = (barData) => {
+    if (mode === "day" && barData?.activeLabel) {
+      setSelectedDay(barData.activeLabel);
+    }
+  };
 
   return (
     <div style={{ width: "90%", height: 500, margin: 30, marginLeft: 60 }}>
-      <h2 className="text-2xl font-semibold mb-8 text-indigo-700 " >
-        📊 Day-wise Profit Summary
+
+      {/* MODE SELECTOR BUTTONS */}
+      <div className="flex gap-4 mb-4">
+        <button
+          className={`px-4 py-2 rounded ${mode === "day" ? "bg-indigo-600 text-white" : "bg-gray-200"}`}
+          onClick={() => setMode("day")}
+        >
+          Daily
+        </button>
+
+        <button
+          className={`px-4 py-2 rounded ${mode === "week" ? "bg-indigo-600 text-white" : "bg-gray-200"}`}
+          onClick={() => setMode("week")}
+        >
+          Weekly
+        </button>
+
+        <button
+          className={`px-4 py-2 rounded ${mode === "month" ? "bg-indigo-600 text-white" : "bg-gray-200"}`}
+          onClick={() => setMode("month")}
+        >
+          Monthly
+        </button>
+      </div>
+
+      <h2 className="text-2xl font-semibold mb-8 text-indigo-700">
+        📊 {mode.toUpperCase()} Profit Summary
       </h2>
-    
+
       <ResponsiveContainer>
         <BarChart
           data={data}
-          barCategoryGap="25%"  // adds spacing between groups of bars
+          onClick={mode === "day" ? onBarClick : null}
+          barCategoryGap="15%"
         >
           <CartesianGrid strokeDasharray="3 3" />
 
-          {/* X-axis with styling and gap */}
           <XAxis
-            dataKey="day"
-            label={{
-              value: "Dates",
-              position: "insideBottom",
-              offset: -2, // adds slight gap between axis and label
-              style: { fontWeight: "bold", fill: "#040315ff", fontSize: 15 },
-            }}
-            tick={{
-              fill: "#4F46E5",
-              fontWeight: "bold",
-              fontSize: 13,
-            }}
+            dataKey="label"
+            tick={{ fill: "#4F46E5", fontWeight: "bold", fontSize: 13 }}
             interval={0}
-            tickMargin={10} // adds space between ticks and bars
+            tickMargin={10}
           />
 
-          {/* Y-axis */}
-          <YAxis
-            label={{
-              value: "Total & Profit (₹)",
-              angle: -90,
-              position: "insideLeft",
-              style: { fontWeight: "bold", fill: "#333", fontSize: 13 },
-            }}
-          />
+          <YAxis />
 
-          <Tooltip
-            formatter={(value) => `₹${value.toLocaleString()}`}
-            cursor={{ fill: "rgba(79,70,229,0.1)" }}
-          />
+          <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
           <Legend />
 
-          {/* Total Bar */}
-          <Bar dataKey="total" fill="rgba(71, 9, 69, 1)" name="Total Sales" radius={[5, 5, 0, 0]} />
-
-          {/* Profit Bar */}
-          <Bar dataKey="profit" fill="rgba(29, 17, 202, 0.9)" name="Profit (20%)" radius={[10, 10, 0, 0]} />
+          <Bar dataKey="total" fill="#65251cc0" name="Total Sales" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="profit" fill="#297f37ff" name="Profit (20%)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-      <Piechart/>
+
+      {mode === "day" && <Piechart selectedDay={selectedDay} />}
     </div>
   );
 }

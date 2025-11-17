@@ -65,6 +65,13 @@ class Orderserializer(serializers.ModelSerializer):
     class Meta:
         model=Order
         fields=['id','user','total','added_on','items']
+#modified
+from rest_framework import serializers
+from .models import Order
+
+class OrderItemSummarySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    quantity = serializers.IntegerField()
 
 
 class Addressserializer(serializers.ModelSerializer):

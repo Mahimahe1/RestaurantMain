@@ -6,54 +6,84 @@ import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
-// Register everything
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-function Piechart() {
-  const [orders, setOrders] = useState([]);
+function Piechart({ selectedDay, filterType }) {
+
+  // 🔥 FIX: If parent does NOT send filterType → set default = "day"
+  const finalFilter = filterType || "day";
+
+  const [dataObj, setDataObj] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!selectedDay) return;
+
+    setLoading(true);
+
+    const apiURL = `http://127.0.0.1:8000/api/orders-by-${finalFilter}/${selectedDay}/`;
+
+    console.log("API URL Called:", apiURL);
+
     axios
-      .get("http://127.0.0.1:8000/api/allorders/")
-      .then((res) => setOrders(res.data))
-      .catch((err) => console.error("Error fetching orders:", err));
-  }, []);
+      .get(apiURL)
+      .then((res) => {
+        console.log("API Response:", res.data);
+        setDataObj(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching:", err);
+        setDataObj(null);
+        setLoading(false);
+      });
+  }, [selectedDay, finalFilter]); // 🔥 FIXED DEPENDENCY
 
-  // ----------- CALCULATE TOTAL QUANTITIES -----------
-  const totals = {};
 
-  orders.forEach((order) => {
-    order.items.forEach((item) => {
-      const name = item.category?.name;
-      const qty = item.quantity;
+  if (!selectedDay)
+    return (
+      <p className="text-center text-xl font-semibold mt-10">
+        👉 Select a {finalFilter} to show item-wise sales pie chart
+      </p>
+    );
 
-      if (!totals[name]) totals[name] = 0;
-      totals[name] += qty;
-    });
-  });
+  if (loading)
+    return <p className="text-center text-lg font-semibold mt-5">Loading...</p>;
 
-  const labels = Object.keys(totals);
-  const values = Object.values(totals);
+  if (!dataObj)
+    return (
+      <p className="text-center text-xl font-semibold mt-5">
+        No data found for this {finalFilter}.
+      </p>
+    );
 
-  // ----------- FIND THE LARGEST ITEM -----------
+  const pieData = dataObj.pie_chart || [];
+  const itemsList = pieData;
+
+  if (pieData.length === 0)
+    return (
+      <p className="text-center text-xl font-semibold mt-5">
+        No item sales found for this {finalFilter}.
+      </p>
+    );
+
+  const labels = pieData.map((p) => p.name);
+  const values = pieData.map((p) => p.quantity);
+
   const maxValue = Math.max(...values);
   const maxIndex = values.indexOf(maxValue);
-  const maxItemName = labels[maxIndex];
+  const explodeOffsets = values.map((_, i) => (i === maxIndex ? 30 : 0));
 
-  // highlight biggest slice
-  const explodeOffsets = values.map((v, i) => (i === maxIndex ? 30 : 0));
-
-  // ----------- PIE CHART DATA -----------
   const data = {
     labels,
     datasets: [
       {
-        label: "Total Quantity Sold",
+        label: "Items Sold",
         data: values,
         offset: explodeOffsets,
         backgroundColor: [
@@ -63,7 +93,6 @@ function Piechart() {
           "rgba(75, 192, 192, 0.8)",
           "rgba(153, 102, 255, 0.8)",
           "rgba(255, 159, 64, 0.8)",
-          "rgba(99, 102, 241, 0.8)",
         ],
         borderColor: "white",
         borderWidth: 2,
@@ -71,63 +100,42 @@ function Piechart() {
     ],
   };
 
-  // ----------- OPTIONS -----------
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: { position: "bottom" },
-      title: {
-        display: true,
-        text: "Total Items Sold (Top Item Highlighted)",
-        font: { size: 20, weight: "bold" },
-      },
-      datalabels: {
-        color: "#fff",
-        font: {
-          weight: "bold",
-          size: 16,
-        },
-        formatter: (value) => value,
-      },
-    },
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      
-      <h1 className="text-4xl text-center font-bold mb-10">
-        🍕 Item Sales Pie Chart
+    <div className="bg-gray-100 p-8 mt-14">
+      <h1 className="text-3xl text-center font-bold mb-8">
+        📅 Item Sales – {finalFilter.toUpperCase()} : {selectedDay}
       </h1>
 
-      {/* PIE CHART */}
       <div className="bg-white p-8 rounded-3xl shadow-xl max-w-2xl mx-auto">
-        <Pie data={data} options={options} />
+        <Pie data={data} options={{ responsive: true }} />
       </div>
 
-      {/* ITEM + QUANTITY LIST */}
-      <div className="max-w-2xl mx-auto mt-10 bg-white p-6 rounded-2xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          📦 Total Quantity Per Item
-        </h2>
+      <div className="max-w-2xl mx-auto mt-8 bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 text-center">📦 Quantity Per Item</h2>
 
-        <ul className="space-y-3">
-          {labels.map((item, index) => (
-            <li 
-              key={item}
-              className={`flex justify-between text-lg p-3 rounded-lg ${
-                item === maxItemName 
-                  ? "bg-green-100 font-bold text-green-700" 
-                  : "bg-gray-100"
-              }`}
-            >
-              <span>{item}</span>
-              <span>{values[index]}</span>
+        <ul className="space-y-2">
+          {itemsList.map((item, index) => (
+            <li key={index} className="flex justify-between p-3 rounded-lg bg-gray-100">
+              <span>{item.name}</span>
+              <span>{item.quantity}</span>
             </li>
           ))}
         </ul>
-
       </div>
 
+      <div className="max-w-2xl mx-auto mt-6 bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold text-center mb-4">📊 Summary</h2>
+
+        <p className="text-lg font-semibold">
+          Total Quantity Sold:{" "}
+          <span className="text-blue-600">{dataObj.total_quantity}</span>
+        </p>
+
+        <p className="text-lg font-semibold">
+          Total Sales:{" "}
+          <span className="text-green-600">₹{dataObj.total_sales}</span>
+        </p>
+      </div>
     </div>
   );
 }

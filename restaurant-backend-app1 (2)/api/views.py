@@ -1,3 +1,4 @@
+import json
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
@@ -224,3 +225,259 @@ class DaywiseProfits(APIView):
             .order_by('day')
         )
         return Response(profits)
+    
+
+
+#modifed 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.utils.dateparse import parse_date
+from django.db.models import Sum
+from .models import OrderItem
+from .serializers import OrderItemserializer
+
+@api_view(["GET"])
+def orders_by_day(request, day):
+    try:
+        orders = Order.objects.filter(added_on__date=day)
+        order_items = OrderItem.objects.filter(order__in=orders)
+
+        # Build summary
+        summary = {}
+        for item in order_items:
+            name = item.category.name
+            summary[name] = summary.get(name, 0) + item.quantity
+
+        pie_chart = [{"name": k, "quantity": v} for k, v in summary.items()]
+
+        total_quantity = sum(summary.values())
+        total_sales = sum([order.total for order in orders])
+
+        return Response({
+            "pie_chart": pie_chart,
+            "total_quantity": total_quantity,
+            "total_sales": total_sales
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.db.models import Sum
+from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
+from .models import Order, OrderItem
+
+# ---------------- DAILY PROFITS ----------------
+@api_view(["GET"])
+def day_profits(request):
+    data = (
+        Order.objects.annotate(day=TruncDay("added_on"))
+        .values("day")
+        .annotate(total_sum=Sum("total"))
+        .order_by("day")
+    )
+
+    result = [{"day": d["day"].strftime("%Y-%m-%d"), "total_sum": d["total_sum"]} for d in data]
+    return Response(result)
+
+
+# ---------------- WEEKLY PROFITS ----------------
+@api_view(["GET"])
+def week_profits(request):
+    data = (
+        Order.objects.annotate(week=TruncWeek("added_on"))
+        .values("week")
+        .annotate(total_sum=Sum("total"))
+        .order_by("week")
+    )
+
+    result = [
+        {"week": d["week"].strftime("%Y-%m-%d"), "total_sum": d["total_sum"]}
+        for d in data
+    ]
+    return Response(result)
+
+
+# ---------------- MONTHLY PROFITS ----------------
+@api_view(["GET"])
+def month_profits(request):
+    data = (
+        Order.objects.annotate(month=TruncMonth("added_on"))
+        .values("month")
+        .annotate(total_sum=Sum("total"))
+        .order_by("month")
+    )
+
+    result = [
+        {"month": d["month"].strftime("%Y-%m-%d"), "total_sum": d["total_sum"]}
+        for d in data
+    ]
+    return Response(result)
+
+
+# ---------------- ITEM PIE CHART FOR SPECIFIC DATE ----------------
+@api_view(["GET"])
+def orders_by_day(request, date):
+    items = OrderItem.objects.filter(ordered_date__date=date)
+
+    if not items.exists():
+        return Response({"pie_chart": [], "total_quantity": 0, "total_sales": 0})
+
+    pie_chart = (
+        items.values("category__name")
+        .annotate(quantity=Sum("quantity"))
+        .order_by("category__name")
+    )
+
+    formatted = [
+        {"name": p["category__name"], "quantity": p["quantity"]}
+        for p in pie_chart
+    ]
+
+    total_quantity = sum(p["quantity"] for p in formatted)
+    total_sales = sum(
+        p["quantity"] * OrderItem.objects.filter(
+            category__name=p["name"]
+        ).first().category.price
+        for p in formatted
+    )
+
+    return Response({
+        "pie_chart": formatted,
+        "total_quantity": total_quantity,
+        "total_sales": total_sales,
+    })
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.db.models import Sum
+from datetime import datetime
+from .models import OrderItem
+from django.http import JsonResponse
+@api_view(['GET'])
+def orders_by_day(request, date):
+    try:
+        # Convert YYYY-MM-DD to datetime.date
+        day = datetime.strptime(date, "%Y-%m-%d").date()
+
+        # Filter by day
+        items = OrderItem.objects.filter(ordered_date__date=day)
+
+        if not items.exists():
+            return Response({
+                "pie_chart": [],
+                "total_quantity": 0,
+                "total_sales": 0
+            })
+
+        # Build pie chart data
+        pie_chart = items.values("category__name").annotate(
+            quantity=Sum("quantity")
+        )
+
+        total_quantity = items.aggregate(Sum("quantity"))["quantity__sum"]
+        total_sales = sum([i.total_price for i in items])
+
+        return Response({
+            "pie_chart": [
+                {"name": p["category__name"], "quantity": p["quantity"]}
+                for p in pie_chart
+            ],
+            "total_quantity": total_quantity,
+            "total_sales": total_sales
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+from django.db.models.functions import ExtractWeek
+from django.db.models import Sum
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+@api_view(['GET'])
+def orders_by_week(request, week):
+    try:
+        # week format "YYYY-Www"
+        year, week_num = week.split("-W")
+        year = int(year)
+        week_num = int(week_num)
+
+        # Get Monday of that week
+        first_day = datetime.strptime(f"{year}-W{week_num}-1", "%G-W%V-%u").date()
+        last_day = first_day.replace(day=first_day.day + 6)
+
+        items = OrderItem.objects.filter(
+            ordered_date__date__range=[first_day, last_day]
+        )
+
+        if not items.exists():
+            return Response({
+                "pie_chart": [],
+                "total_quantity": 0,
+                "total_sales": 0
+            })
+
+        pie_chart = items.values("category__name").annotate(
+            quantity=Sum("quantity")
+        )
+
+        total_quantity = items.aggregate(Sum("quantity"))["quantity__sum"]
+        total_sales = sum(i.total_price for i in items)
+
+        return Response({
+            "pie_chart": [
+                {"name": p["category__name"], "quantity": p["quantity"]}
+                for p in pie_chart
+            ],
+            "total_quantity": total_quantity,
+            "total_sales": total_sales
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+@api_view(['GET'])
+def orders_by_month(request, month):
+    try:
+        # month format "YYYY-MM"
+        year, month_num = month.split("-")
+        year = int(year)
+        month_num = int(month_num)
+
+        first_day = datetime(year, month_num, 1).date()
+
+        # Get last day of month
+        if month_num == 12:
+            last_day = datetime(year, 12, 31).date()
+        else:
+            next_month = datetime(year, month_num + 1, 1).date()
+            last_day = next_month.replace(day=next_month.day - 1)
+
+        items = OrderItem.objects.filter(
+            ordered_date__date__range=[first_day, last_day]
+        )
+
+        if not items.exists():
+            return Response({
+                "pie_chart": [],
+                "total_quantity": 0,
+                "total_sales": 0
+            })
+
+        pie_chart = items.values("category__name").annotate(
+            quantity=Sum("quantity")
+        )
+
+        total_quantity = items.aggregate(Sum("quantity"))["quantity__sum"]
+        total_sales = sum(i.total_price for i in items)
+
+        return Response({
+            "pie_chart": [
+                {"name": p["category__name"], "quantity": p["quantity"]}
+                for p in pie_chart
+            ],
+            "total_quantity": total_quantity,
+            "total_sales": total_sales
+        })
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
