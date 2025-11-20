@@ -17,7 +17,7 @@ import CartSummary from './CartSummary';
 import Changeaddress from './Changeaddress';
 import Paymentpage from './Paymentpage';
 import AddAddressForm from './Address';
-import Profits from './Profits';
+import Profits from "./profits";
 import LandingPage from './Landingpage';
 import Orders from './Orders';
 import Profile from './Profile';

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Backcomp from "./Backcomp";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -9,6 +10,10 @@ const LandingPage = () => {
   };
 
   return (
+    <>
+     <div className="absolute top-4 left-4 z-50">
+        <Backcomp />
+      </div>
     <div className="h-screen w-full bg-cover bg-center flex items-center justify-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836')" }}>
       
@@ -28,6 +33,7 @@ const LandingPage = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

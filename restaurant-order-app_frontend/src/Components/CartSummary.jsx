@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "./Navbar";
+  import Backcomp from "./Backcomp";  
 function CartSummary() {
   const url = "http://127.0.0.1:8000/api/viewcart/";
   const token = localStorage.getItem("token");
@@ -92,16 +93,33 @@ const removeItem = (item) => {
   
   if (cart.length === 0) {
     return (
+      <>
+      <div className="w-full">
+          <Navbar />
+      </div>
+      <div className="absolute top-20 left-4 z-50">
+        <Backcomp />
+      </div>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-100">
+        
         <p className="text-gray-700 text-lg font-medium bg-white px-6 py-3 rounded-2xl shadow-md">
           🛒 Your cart is empty
         </p>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    <div className="w-full">
+          <Navbar />
+    </div>
+    <div className="absolute top-20 left-4 z-50">
+        <Backcomp />
+    </div>
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-100 p-6">
+      
       <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-6 border border-gray-100">
         <h3 className="text-3xl font-bold text-center mb-8 text-gray-800">
           🛍 Cart Summary
@@ -187,7 +205,9 @@ const removeItem = (item) => {
         </button>
       </div>
     </div>
+    </>
   );
+  
 }
 
 export default CartSummary;

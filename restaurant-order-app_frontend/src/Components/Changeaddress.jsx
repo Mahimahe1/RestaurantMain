@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 export default function Changeaddress({ onSelectAddress }) {
   const [addresses, setAddresses] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -48,7 +49,16 @@ export default function Changeaddress({ onSelectAddress }) {
   };
 
   return (
+    <>
+    <div className="w-full">
+      <Navbar />
+    </div>
+    <div className="absolute top-20 left-4 z-50">
+      <Backcomp />
+    </div>
+    
     <div className="min-h-screen bg-gray-50 flex justify-center p-4">
+      
       <div className="w-full max-w-2xl bg-white shadow-lg rounded-2xl border border-gray-200">
         <div className="border-b p-4 text-center">
           <h2 className="text-xl font-semibold text-indigo-600">
@@ -122,5 +132,6 @@ export default function Changeaddress({ onSelectAddress }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,9 @@
+import React from "react";
+import Backcomp from "./Backcomp";
 const AboutUs = () => {
   return (
+    <>
+     
     <div
       className="relative min-h-screen w-full bg-cover bg-center bg-fixed bg-no-repeat text-white"
       style={{
@@ -7,6 +11,9 @@ const AboutUs = () => {
           "url('https://images.unsplash.com/photo-1600891964091-0e32e19b8d7c?auto=format&fit=crop&w=1950&q=80')",
       }}
     >
+      <div className="absolute top-4 left-4 z-50">
+        <Backcomp />
+      </div>
       {/* Overlay for readability */}
       <div className="absolute inset-0 bg-black bg-opacity-60"></div>
 
@@ -34,6 +41,7 @@ const AboutUs = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

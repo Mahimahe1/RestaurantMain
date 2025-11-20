@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Piechart from "./Piechart";
-
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 import {
   BarChart,
   Bar,
@@ -50,10 +51,17 @@ function Profits() {
   };
 
   return (
-    <div style={{ width: "90%", height: 500, margin: 30, marginLeft: 60 }}>
-
+    <>
+    <div className="w-full">
+          <Navbar />
+    </div>
+    <div>
+      <Backcomp />
+    </div>
+    <div style={{ width: "100%", height: 500,mb:10 }}>
+      
       {/* MODE SELECTOR BUTTONS */}
-      <div className="flex gap-4 mb-4">
+      <div className="flex gap-4 mb-4 mt-4">
         <button
           className={`px-4 py-2 rounded ${mode === "day" ? "bg-indigo-600 text-white" : "bg-gray-200"}`}
           onClick={() => setMode("day")}
@@ -107,6 +115,7 @@ function Profits() {
 
       {mode === "day" && <Piechart selectedDay={selectedDay} />}
     </div>
+    </>
   );
 }
 

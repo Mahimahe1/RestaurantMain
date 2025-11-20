@@ -3,8 +3,9 @@ import axios from 'axios';
 import Hero from './Hero';
 import Footer from './Footer';
 import CartSummary from './CartSummary'; // ✅ Import here
+import Backcomp from './Backcomp';
 
-
+import Navbar from './Navbar';
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState([]);
@@ -69,12 +70,14 @@ const Categories = () => {
 
   return (
     <div className=" mt-0 relative">
+    <Navbar />
+    <div className="absolute top-20 left-4 z-50">
+        <Backcomp />
+    </div>
     <marquee behavior="scroll" direction="left">
       🍽️ Welcome to Foodie's Paradise — Fresh Taste • Great Ambience • Fast Service • Order Now! 🍕🍔🌮
     </marquee>
-
     <Hero />
-
     <h2 className="text-2xl font-bold mb-6 text-center">🍽 Explore Categories</h2>
 
     {/* CATEGORY GRID */}

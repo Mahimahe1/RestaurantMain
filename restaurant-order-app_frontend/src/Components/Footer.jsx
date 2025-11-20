@@ -8,7 +8,7 @@ const Footer = () => {
         
         {/* Logo / Brand */}
         <div className="mb-6 md:mb-0">
-          <h1 className="text-2xl font-bold">MyBrand</h1>
+          <h1 className="text-2xl font-bold">Book My Order</h1>
           <p className="text-gray-400 mt-2">Delivering quality products since 2025.</p>
         </div>
 
@@ -79,7 +79,7 @@ const Footer = () => {
 
       {/* Bottom line */}
       <div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500">
-        © 2025 MyBrand. All rights reserved.
+        © 2025 Book My Order. All rights reserved.
       </div>
     </footer>
   );

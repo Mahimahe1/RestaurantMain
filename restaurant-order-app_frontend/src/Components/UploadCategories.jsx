@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 const UploadCategories = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -58,7 +59,16 @@ const UploadCategories = () => {
   };
   
   return ( 
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-green-100 to-green-200 py-10 px-4">
+    <>
+    <div className="w-full">
+          <Navbar />
+          <div className="absolute top-20 left-4 z-50">
+      <Backcomp />
+    </div>
+    </div>
+   
+    <div className=" flex flex-col h-screen justify-center items-center bg-gradient-to-r from-green-100 to-green-200  ">
+      
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg transition-transform transform hover:scale-105">
         <h2 className="text-3xl font-extrabold mb-6 text-center text-green-700">
           🌿 Add New Category
@@ -134,6 +144,7 @@ const UploadCategories = () => {
         </form>
       </div>
     </div>
+    </>
     
   );
   

@@ -1,5 +1,11 @@
+import React from "react";
+import Backcomp from "./Backcomp";  
 const HelpCenter = () => {
   return (
+    <>
+    <div className="absolute top-4 left-4 z-50">
+        <Backcomp />
+      </div>
     <div
       className="relative min-h-screen w-full bg-cover bg-center bg-fixed bg-no-repeat text-white flex items-center justify-center"
       style={{
@@ -36,6 +42,7 @@ const HelpCenter = () => {
         
       </div>
     </div>
+    </>
   );
 };
 

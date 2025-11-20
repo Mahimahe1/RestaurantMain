@@ -127,7 +127,12 @@ const Navbar = () => {
                 Search
               </button>
             </form>
-
+            <Link
+              to="/view"
+              className="hover:underline" 
+            >
+              <i class="fas fa-home" style={{ fontSize: "22px" }}></i>
+            </Link>
             {/* Cart */}
             <Link to="/cart" className="hover:underline">
               <i
@@ -209,12 +214,13 @@ const Navbar = () => {
                             Upload Items
                           </Link>
                           <Link
-                            to="/view-orders"
-                            className="block px-4 py-2 hover:bg-gray-100"
+                            to="/Allorders"
+                            className="block px-4 py-2 hover:bg-gray-100"   
                             onClick={() => setShowDropdown(false)}
                           >
-                            View Orders
+                            User Order details
                           </Link>
+                          
                         </>
                       )}
 

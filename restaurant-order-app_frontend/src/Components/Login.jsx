@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import l_img from '../images/image1.png';
+import Backcomp from "./Backcomp";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -40,6 +41,10 @@ const Login = () => {
   };
 
   return (
+    <>
+    <div className="absolute top-4 left-4 z-50">
+      <Backcomp />
+    </div>
     <div
       className="h-screen w-full bg-cover bg-center flex items-center justify-center"
       style={{ backgroundImage: `url(${l_img})` }}
@@ -98,6 +103,7 @@ const Login = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

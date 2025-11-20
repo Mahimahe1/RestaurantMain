@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Changeaddress from "./Changeaddress";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 export default function Paymentpage() {
   const [address, setAddress] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState("upi1");
@@ -60,7 +62,15 @@ export default function Paymentpage() {
   
 
   return (
+    <>
+    <div className="w-full">
+          <Navbar />
+    </div>
+    <div className="absolute top-20 left-4 z-50">
+      <Backcomp />
+    </div>
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-white flex justify-center p-4">
+      
       <div className="w-full max-w-lg bg-white shadow-lg rounded-2xl border border-gray-200">
        
         <div className="p-4 border-b">
@@ -143,5 +153,6 @@ export default function Paymentpage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

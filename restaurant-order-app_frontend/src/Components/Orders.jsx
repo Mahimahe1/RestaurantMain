@@ -1,9 +1,17 @@
 import { ShoppingBag, Calendar } from "lucide-react";
-
-
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 export default function Orders({ orders }) {
   return (
+    <>
+    <div className="w-full">
+          <Navbar />
+    </div>
+    <div className="absolute top-20 left-4 z-50">
+      <Backcomp />
+    </div>
     <div className="max-w-5xl mx-auto p-6">
+        
       <h1 className="text-3xl font-semibold mb-6 flex items-center gap-2">
         <ShoppingBag className="w-7 h-7 text-blue-600" />
         Order History
@@ -73,6 +81,7 @@ export default function Orders({ orders }) {
         ))
       )}
     </div>
+    </>
   );
 }
 

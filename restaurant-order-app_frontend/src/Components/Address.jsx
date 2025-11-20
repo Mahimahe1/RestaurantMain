@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "./Navbar";
+import Backcomp from "./Backcomp";
 export default function AddAddressForm() {
   const token = localStorage.getItem("token");
   const navigate=useNavigate()
@@ -75,7 +76,16 @@ export default function AddAddressForm() {
   };
 
   return (
+    <>
+    <div className="w-full">
+        <Navbar />
+    </div>
+    <div className="absolute top-20 left-4 z-50">
+      <Backcomp />
+    </div>
+   
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-50 to-white p-4">
+      
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-2xl border border-indigo-100">
         <div className="p-6 border-b border-indigo-100 text-center">
           <h2 className="text-2xl font-semibold text-indigo-600">
@@ -284,5 +294,6 @@ export default function AddAddressForm() {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Backcomp from "./Backcomp";
 import { useNavigate } from "react-router-dom";
 import registerBg from "../images/register_img.png"; // ✅ use your own image
 
@@ -38,6 +39,10 @@ const Register = () => {
   };
 
   return (
+    <>
+    <div className="absolute top-4 left-4 z-50">
+      <Backcomp />
+    </div>
     <div
       className="min-h-screen w-full flex items-center justify-center bg-cover bg-center"
       style={{
@@ -139,6 +144,7 @@ const Register = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 
